@@ -33,10 +33,10 @@ function hGroup = vectorupdate(hArg, new)
 %
 %Example:
 %
-%   % draw Cartesian unit vectors but let MATLAB choose the axis limits
-%   figure; view(3); set(gca,'Clipping','off');
-%   vector([0,0,0], [1,0,0; 0,1,0; 0,0,1]);
-%   % axis limits have changed, so we need to update the vectors
+%   % draw a 3D vector but let MATLAB choose the axis limits
+%   figure; view(-30, 15); axis equal; set(gca,'Clipping','off');
+%   vector([0 0 0], [3 3 3]); box on;
+%   % axis limits have changed -> call vectorupdate
 %   vectorupdate;
 %
 %See also VECTOR.

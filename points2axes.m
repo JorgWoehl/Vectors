@@ -59,7 +59,7 @@ if (nargin>1)
         'This function accepts only one input; other inputs are ignored.');
 end
 
-% Projection
+% projection
 if strcmp(ax.Projection, 'perspective')
     % perspective projection
     warning('points2axes:Projection',...
@@ -79,7 +79,7 @@ zRange = diff(ax.ZLim);
 % data aspect ratio and camera-up vector
 d = ax.DataAspectRatio;
 camUp = ax.CameraUpVector;
-% edges of the axes "box" plus camera-up vector, expressed in equal length "units"
+% edges of the axes box plus camera-up vector, expressed in equal length units
 x = [0 xRange xRange 0      0      xRange xRange 0      camUp(1)] / d(1);
 y = [0 0      yRange yRange 0      0      yRange yRange camUp(2)] / d(2);
 z = [0 0      0      0      zRange zRange zRange zRange camUp(3)] / d(3);

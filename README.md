@@ -1,9 +1,10 @@
 # Vectors
 
-_Vectors_ is a set of MATLAB tools for the creation of 3D (and 2D) scientific drawings and illustrations. It currently contains the following functions (with more to come):
+_Vectors_ is a set of MATLAB tools for the creation of 3D (and 2D) scientific drawings and illustrations. It currently contains the following functions:
 
 - **vector** draws a fully customizable 3D vector
 - **vectorupdate** is a helper function that updates vector properties and restores the appearance of vectors that were inadvertently modified
+- the utility function [**points2axes**](https://www.mathworks.com/matlabcentral/fileexchange/90012-points2axes)
 
 ## Purpose
 
@@ -31,7 +32,7 @@ Any feedback or suggestions for improvement are welcome!
  
 Vector properties are based on the following vector components: the cone (arrowhead), the shaft, and an optional sphere marking the origin. The cone itself consists of the base, the rim, the outer cone surface, and the tip.
  
-![vector](https://github.com/JorgWoehl/Vectors/blob/main/assets/VectorFig.png)
+![vector](https://github.com/JorgWoehl/Vectors/blob/main/assets/vector.png)
  
 `vector(O,P,style)` draws a vector or group of vectors with properties specified in short form by the character vector `style`. `style` can contain any or all of the following properties in any order: the main color, the width (diameter) of the shaft in points, where 1 point = 1/72 of an inch, and the tip highlight mode (see below for more details).
  
@@ -106,11 +107,12 @@ Furthermore, **vector** needs access to the data aspect ratio, which is only rep
 ## Examples
  
 ```matlab
-% draw Cartesian unit vectors with a red sphere marking the origin
-figure; view(3); daspect([1,1,1]);
-xlim([0,1]); ylim([-0.5,1]); zlim([-0.5,1]);
-vector([0,0,0], [1,0,0; 0,1,0; 0,0,1], SphereDiameter=6, SphereColor=[1,0,0]);
+% draw Cartesian unit vectors with a red sphere at the origin
+figure; view(-30, 15); axis equal; axis off;
+axis([-0.5 1 -0.5 1 -0.5 1]);
+vector([0 0 0], [1 0 0; 0 1 0; 0 0 1], SphereDiameter=6, SphereColor=[1 0 0]);
 ```
+![example1](https://github.com/JorgWoehl/Vectors/blob/main/assets/example1.png)
 
 # **vectorupdate**
 
@@ -137,9 +139,13 @@ The figure and axes containing the restored or updated vectors will become the c
 ## Examples
  
 ```matlab
-% draw Cartesian unit vectors but let MATLAB choose the axis limits
-figure; view(3); set(gca,'Clipping','off');
-vector([0,0,0], [1,0,0; 0,1,0; 0,0,1]);
-% axis limits have changed, so we need to update the vectors
+% draw a 3D vector but let MATLAB choose the axis limits
+figure; view(-30, 15); axis equal; set(gca,'Clipping','off');
+vector([0 0 0], [3 3 3]); box on;
+% axis limits have changed -> call vectorupdate
 vectorupdate;
 ```
+
+![example2](https://github.com/JorgWoehl/Vectors/blob/main/assets/example2.png)
+
+

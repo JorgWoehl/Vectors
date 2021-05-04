@@ -108,7 +108,8 @@ function hGroup = vector(O, P, style, vect)
 %      expressed as a fractional value between 0 and 1. The default is 0.2.
 %   'RimFraction'
 %      Ratio of the rim thickness to the radius of the cone, expressed as a
-%      fractional value between 0 and 1. The default is 0.1.
+%      fractional value between 0 and 1. The default is 0.167, which
+%      corresponds to a 1 point rim for the default vector.
 %   'NumPoints'
 %      Number of points around the vector circumference, specified as a
 %      positive whole number. The minimum is 2; the default is 50.
@@ -132,10 +133,10 @@ function hGroup = vector(O, P, style, vect)
 %
 %Example:
 %
-%   % Cartesian unit vectors with a red sphere at the origin
-%   figure; view(3); daspect([1,1,1]);
-%   xlim([-0.5,1]); ylim([-0.5,1]); zlim([-0.5,1]);
-%   vector([0,0,0], [1,0,0; 0,1,0; 0,0,1], SphereDiameter=6, SphereColor=[1,0,0]);
+%   % draw Cartesian unit vectors with a red sphere at the origin
+%   figure; view(-30, 15); axis equal; axis off;
+%   axis([-0.5 1 -0.5 1 -0.5 1]);
+%   vector([0 0 0], [1 0 0; 0 1 0; 0 0 1], SphereDiameter=6, SphereColor=[1 0 0]);
 %
 %See also VECTORUPDATE.
 
@@ -162,7 +163,7 @@ arguments
     vect.ConeWidth double {mustBeScalarOrEmpty, mustBeFinite, mustBeNonnegative} = []
     vect.ConeLength double {mustBeScalarOrEmpty, mustBeFinite, mustBeNonnegative} = []
     vect.TipFraction (1,1) double {mustBeFinite, mustBeInRange(vect.TipFraction,0,1,'inclusive')} = 0.2
-    vect.RimFraction (1,1) double {mustBeFinite, mustBeInRange(vect.RimFraction,0,1,'inclusive')} = 0.1
+    vect.RimFraction (1,1) double {mustBeFinite, mustBeInRange(vect.RimFraction,0,1,'inclusive')} = 0.167
     vect.NumPoints (1,1) double {mustBeFinite, mustBeInteger, mustBeGreaterThan(vect.NumPoints,1)} = 50
 end
 
@@ -517,6 +518,7 @@ for n = 1:size(P,1)
 end
 
 % issue warning if axis limits have changed
+[ax.XLim ax.YLim ax.ZLim];
 if ~all(axLims == [ax.XLim ax.YLim ax.ZLim])
     % axis limits have changed
     warning('vector:AxisLimitsChanged',...
