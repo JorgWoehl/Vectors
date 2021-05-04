@@ -141,11 +141,15 @@ The figure and axes containing the restored or updated vectors will become the c
 ```matlab
 % draw a 3D vector but let MATLAB choose the axis limits
 figure; view(-30, 15); axis equal; set(gca,'Clipping','off');
-vector([0 0 0], [3 3 3]); box on;
-% axis limits have changed -> call vectorupdate
-vectorupdate;
+vector([0 0 0], [3 3 3]);
+```
+The vector was drawn based on the default axis limits from 0 to 1, which have been changed to accommodate the vector:
+
+![example2a](https://github.com/JorgWoehl/Vectors/blob/main/assets/example2a.png)
+
+```matlab
+% axis limits have changed -> call vectorupdate; let's also change the main color to red
+vectorupdate(Color=[1 0 0]);
 ```
 
-![example2](https://github.com/JorgWoehl/Vectors/blob/main/assets/example2.png)
-
-
+![example2b](https://github.com/JorgWoehl/Vectors/blob/main/assets/example2b.png)

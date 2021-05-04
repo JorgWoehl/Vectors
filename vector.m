@@ -150,7 +150,7 @@ arguments
     P (:,3) double {mustBeNonempty, mustBeFinite, mustBeReal}
     % these properties will be stored as vect.O and vect.P
     style {mustBeTextScalar} = '1'
-    % overridden by vect.TipMode, vect.Color, and vect.ShaftWidth (if specified)
+    % overridden by vect.TipMode, vect.Color, and vect.ShaftWidth if specified
     vect.Color (1,3) double {mustBeFinite, mustBeInRange(vect.Color,0,1,'inclusive')}
     vect.ConeColor (1,3) double {mustBeFinite, mustBeInRange(vect.ConeColor,0,1,'inclusive')}
     vect.RimColor (1,3) double {mustBeFinite, mustBeInRange(vect.RimColor,0,1,'inclusive')}
@@ -243,7 +243,7 @@ else
     end
 end
 
-% tip highlight: parse style for 'o' or '*'
+% tip highlight mode: parse style for 'o' or '*'
 pat = regexpPattern('(*|o)');
 TipMode = extract(style, pat);
 if isempty(TipMode)
@@ -261,6 +261,9 @@ else
         vect.TipMode = TipMode{1};
     end
 end
+
+% this set of vector data will be saved as UserData
+vectData = vect;
 
 %% Dimensions
 
@@ -451,7 +454,7 @@ cam = (camtarget-campos)./d;	% "squeezed" camera view direction vector
 camDir = cam/norm(cam);         % corresponding unit vector
 
 % create group object for vectors and spheres
-hGroup = hggroup('Tag', 'vectorgroup', 'UserData', vect,...
+hGroup = hggroup('Tag', 'vectorgroup', 'UserData', vectData,...
     'ButtonDownFcn', {@(src,evt) vectorupdate(src)});
 
 % save current axis limits
