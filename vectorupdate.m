@@ -34,7 +34,7 @@ function hGroup = vectorupdate(hArg, new)
 %   % draw a 3D vector but let MATLAB automatically choose axis limits
 %   figure; view(-30, 15); axis equal;
 %   vector([0 0 0], [3 3 3]);
-%   % axis limits have changed -> call vectorupdate; let's also change the main color to red
+%   % axis limits have changed -> vectorupdate; let's also change the color to red
 %   vectorupdate(Color=[1 0 0]);
 %
 %See also VECTOR.

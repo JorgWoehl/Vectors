@@ -38,11 +38,10 @@ Vector properties are based on the following vector components: the cone (arrowh
  
 `vector(O,P,style)` draws a vector or group of vectors with properties specified in short form by the character vector `style`. `style` can contain any or all of the following properties in any order: the main color, the width (diameter) of the shaft in points, where 1 point = 1/72 of an inch, and the tip highlight mode (see below for more details).
  
-**Main color**
+**Shaft width** in points: simple decimal notation (default: 1 point)
 
-: 
-
-| :--- | :--- |
+| Main color | |
+| :---: | :--- |
 | `'r'` | red |
 | `'g'` | green |
 | `'b'` | blue |
@@ -52,15 +51,8 @@ Vector properties are based on the following vector components: the cone (arrowh
 | `'k'` | black (default) |
 | `'w'` | white |
 
-**Shaft width** in points
-
-: simple decimal notation (default: 1 point)
-
-**Tip highlight mode**
-
-:
-
-| :--- | :--- |
+| Tip highlight mode | |
+| :---: | :--- |
 | `''` | never (default) |
 | `'*'` | always |
 | `'o'` | only when facing camera |
@@ -69,61 +61,47 @@ If a property is specified more than once (as in `style = 'rg'`), then only the 
  
 `vector(..., Name-Value-Pairs)` specifies vector properties using comma-separated `'Name',Value` syntax or the equal-sign syntax `Name=Value` introduced in R2021a. The following properties can be assigned:
  
-`'Color'`
-
+* `'Color'`
 : Main color of the vector(s), specified as an RGB triplet; this overrides any color specified in `style`. The default is black. The main color is the default color for all vector parts except for the base and the tip.
 
-`'ConeColor'`
-
+* `'ConeColor'`
 : Color of the outer cone surface, specified as an RGB triplet. The default is the main color.
 
-`'RimColor'`
-
+* `'RimColor'`
 : Color of the rim, specified as an RGB triplet. The default is the cone color.
 
-`'BaseColor'`
-
+* `'BaseColor'`
 : Color of the base (inside the rim), specified as an RGB triplet. The default is a lighter shade of the cone color, or light grey if the cone color is white.
 
-`'TipColor'`
-
+* `'TipColor'`
 : Color of the highlighted tip, specified as an RGB triplet. The default is a lighter shade of the cone color, or light grey if the cone color is white. Note that the tip uses `'TipColor'` only if `'TipMode'` is set to `'*'`, or set to `'o'` and the vector in question is directly facing the camera. If the tip is not highlighted, the default color is the cone color.
 
-`'SphereColor'`
-
+* `'SphereColor'`
 : Color of the sphere marking the origin, specified as an RGB triplet. The default is the main color.
 
-`'TipMode'`
-
+* `'TipMode'`
 : Tip highlight mode (`''` (default)|`'*'`|`'o'`); this overrides any mode specified in `style`. In default mode, the tip is not highlighted but uses the same color as the rest of the outer cone surface. If the mode is set to `'*'`, the tip is highlighted using `'TipColor'`. If the mode is set to `'o'`, the tip is highlighted using `'TipColor'` but only if the vector in question is directly facing the camera.
 
-`'SphereDiameter'`
-
+* `'SphereDiameter'`
 : Diameter of the sphere marking the origin specified in points, where 1 point = 1/72 of an inch. The default is 0 (no sphere).
 
-`'ShaftWidth'`
-
+* `'ShaftWidth'`
 : Width (diameter) of the shaft in points, where 1 point = 1/72 of an inch; this overrides any width specified in `style`. The default is 1 point. Note that the default cone width and default cone length scale linearly with `'ShaftWidth'`.
 
-`'ConeWidth'`
-
+* `'ConeWidth'`
 : Width (diameter) of the cone base incl. rim in points, where 1 point = 1/72 of an inch. The default is 12 times `'ShaftWidth'`.
 
-`'ConeLength'`
-
+* `'ConeLength'`
 : Full length of the cone in points, where 1 point = 1/72 of an inch. The default is 3 times `'ConeWidth'`. Note that a cone appears in its full length only if the vector is parallel to the viewing plane.
 
-`'TipFraction'`
-
+* `'TipFraction'`
 :Ratio of the length of the tip to the full length of the cone, expressed as a fractional value between 0 and 1. The default is 0.2.
 
-`'RimFraction'`
-
+* `'RimFraction'`
 : Ratio of the rim thickness to the radius of the cone, expressed as a fractional value between 0 and 1. The default is 0.167, which
 corresponds to a 1 point rim for the default vector.
 
-`'NumPoints'`
-
+* `'NumPoints'`
 : Number of points around the vector circumference, specified as a positive whole number. The minimum is 2; the default is 50.
 
 ## Notes
@@ -178,7 +156,7 @@ This vector is drawn based on the axis limits that are in place before **vector*
 ![example2a](https://github.com/JorgWoehl/Vectors/blob/main/assets/example2a.png)
 
 ```matlab
-% axis limits have changed -> call vectorupdate; let's also change the main color to red
+% axis limits have changed -> vectorupdate; let's also change the color to red
 vectorupdate(Color=[1 0 0]);
 ```
 
