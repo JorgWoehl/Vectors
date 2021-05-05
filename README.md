@@ -38,19 +38,32 @@ Vector properties are based on the following vector components: the cone (arrowh
  
 `vector(O,P,style)` draws a vector or group of vectors with properties specified in short form by the character vector `style`. `style` can contain any or all of the following properties in any order: the main color, the width (diameter) of the shaft in points, where 1 point = 1/72 of an inch, and the tip highlight mode (see below for more details).
  
-| Main color | | |
-| :--- | :--- | :--- | 
-| `'r'`  red | `'c'`  cyan | `'k'`  black (default) |
-| `'g'`  green | `'m'`  magenta | `'w'`  white |
-| `'b'`  blue | `'y'`  yellow | |
+**Main color**
 
-**Shaft width** in points: simple decimal notation (default: 1 point)
+: 
 
-| Tip highlight mode | 
-| :--- |
-| ''   never (default) |
-| '*'  always |
-| 'o'  only when facing camera |
+| :--- | :--- |
+| `'r'` | red |
+| `'g'` | green |
+| `'b'` | blue |
+| `'c'` | cyan |
+| `'m'` | magenta |
+| `'y'` | yellow |
+| `'k'` | black (default) |
+| `'w'` | white |
+
+**Shaft width** in points
+
+: simple decimal notation (default: 1 point)
+
+**Tip highlight mode**
+
+:
+
+| :--- | :--- |
+| `''` | never (default) |
+| `'*'` | always |
+| `'o'` | only when facing camera |
  
 If a property is specified more than once (as in `style = 'rg'`), then only the first occurrence (`'r'`) is taken into account. Invalid characters in `style` will be ignored.
  

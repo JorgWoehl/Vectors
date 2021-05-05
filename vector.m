@@ -139,7 +139,7 @@ function hGroup = vector(O, P, style, vect)
 %See also VECTORUPDATE.
 
 % Created 2021-04-26 by Jorg C. Woehl.
-% 2021-05-02 (JCW): First release version (v1.0).
+% 2021-05-04 (JCW): First release version (v1.0).
 
 %% Input argument validation
 

@@ -40,6 +40,7 @@ function hGroup = vectorupdate(hArg, new)
 %See also VECTOR.
 
 % Created 2021-04-26 by Jorg C. Woehl.
+% 2021-05-04 (JCW): First release version (v1.0).
 
 %% Input argument validation
 
