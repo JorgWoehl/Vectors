@@ -44,17 +44,16 @@ function hGroup = vector(O, P, style, vect)
 %   Shaft width in points: simple decimal notation (default: 1 point)
 %
 %   Tip highlight mode:         ''   never (default)
-%                               'o'  when facing camera
 %                               '*'  always
+%                               'o'  only when facing camera
 %
 %   If a property is specified more than once (as in STYLE = 'rg'), then
 %   only the first occurrence ('r') is taken into account. Invalid
 %   characters in STYLE will be ignored.
 %
 %   VECTOR(..., Name-Value-Pairs) specifies vector properties using
-%   comma-separated 'NAME',VALUE syntax or the the equal-sign syntax
-%   NAME=VALUE introduced in R2021a. The following properties can be
-%   assigned:
+%   comma-separated 'NAME',VALUE syntax or the equal-sign syntax NAME=VALUE
+%   introduced in R2021a. The following properties can be assigned:
 %
 %   'Color'
 %      Main color of the vector(s), specified as an RGB triplet; this
@@ -75,14 +74,14 @@ function hGroup = vector(O, P, style, vect)
 %      Color of the highlighted tip, specified as an RGB triplet. The
 %      default is a lighter shade of the cone color, or light grey if the
 %      cone color is white. Note that the tip uses 'TipColor' only if
-%      'TipMode' is set to '*', or set to '*' and the vector in question is
+%      'TipMode' is set to '*', or set to 'o' and the vector in question is
 %      directly facing the camera. If the tip is not highlighted, the
 %      default color is the cone color.
 %   'SphereColor'
 %      Color of the sphere marking the origin, specified as an RGB triplet.
 %      The default is the main color.
 %   'TipMode'
-%      Tip highlight mode ('' (default)|'o'|'*'); this overrides any mode
+%      Tip highlight mode ('' (default)|'*'|'o'); this overrides any mode
 %      specified in STYLE. In default mode, the tip is not highlighted but
 %      uses the same color as the rest of the outer cone surface. If the
 %      mode is set to '*', the tip is highlighted using 'TipColor'. If the
@@ -133,9 +132,8 @@ function hGroup = vector(O, P, style, vect)
 %
 %Example:
 %
+%   figure; view(-30, 15); axis equal; axis off; axis([-0.5 1 -0.5 1 -0.5 1]);
 %   % draw Cartesian unit vectors with a red sphere at the origin
-%   figure; view(-30, 15); axis equal; axis off;
-%   axis([-0.5 1 -0.5 1 -0.5 1]);
 %   vector([0 0 0], [1 0 0; 0 1 0; 0 0 1], SphereDiameter=6, SphereColor=[1 0 0]);
 %
 %See also VECTORUPDATE.
@@ -150,14 +148,14 @@ arguments
     P (:,3) double {mustBeNonempty, mustBeFinite, mustBeReal}
     % these properties will be stored as vect.O and vect.P
     style {mustBeTextScalar} = '1'
-    % overridden by vect.TipMode, vect.Color, and vect.ShaftWidth if specified
+    % overridden by vect.TipMode, vect.Color, and vect.ShaftWidth, if specified
     vect.Color (1,3) double {mustBeFinite, mustBeInRange(vect.Color,0,1,'inclusive')}
     vect.ConeColor (1,3) double {mustBeFinite, mustBeInRange(vect.ConeColor,0,1,'inclusive')}
     vect.RimColor (1,3) double {mustBeFinite, mustBeInRange(vect.RimColor,0,1,'inclusive')}
     vect.BaseColor (1,3) double {mustBeFinite, mustBeInRange(vect.BaseColor,0,1,'inclusive')}
     vect.TipColor (1,3) double {mustBeFinite, mustBeInRange(vect.TipColor,0,1,'inclusive')}
     vect.SphereColor (1,3) double {mustBeFinite, mustBeInRange(vect.SphereColor,0,1,'inclusive')}
-    vect.TipMode {mustBeMember(vect.TipMode, {'','o','*'})}
+    vect.TipMode {mustBeMember(vect.TipMode, {'','*','o'})}
     vect.SphereDiameter double {mustBeScalarOrEmpty, mustBeFinite, mustBeNonnegative} = 0
     vect.ShaftWidth double {mustBeScalarOrEmpty, mustBeFinite, mustBeNonnegative}
     vect.ConeWidth double {mustBeScalarOrEmpty, mustBeFinite, mustBeNonnegative} = []
@@ -171,7 +169,7 @@ end
 vect.O = O;
 vect.P = P;
 
-% check size of O and extend if needed
+% check size of O and extend to a matrix if needed
 if (size(O,1) == 1)
     % O is 1-by-3; repeat it to match the size of P
     oneOrigin = true;
@@ -180,17 +178,17 @@ else
     oneOrigin = false;
 end
 
-% check size of P and extend if needed
+% check size of P and extend to a matrix if needed
 if (size(P,1) == 1)
     % P is 1-by-3; repeat it to match the size of O
     P = repmat(P, size(O,1), 1);
 end
 
-% make sure O and P have the same size
+% make sure that O and P have the same size
 assert(isequal(size(O), size(P)), 'vector:IncorrectInputType',...
     'If input 1 and input 2 are matrices, they must have the same size.');
 
-% get current axes
+% get current axes' data aspect ratio
 ax = gca;
 if ~strcmp(ax.DataAspectRatioMode, 'manual')
     warning('vector:DataAspectRatio',...
@@ -206,7 +204,7 @@ vectorColor = extract(style, pat);
 if isempty(vectorColor)
     % nothing found, check optional Color argument
     if ~isfield(vect, 'Color')
-        % not specified, set to default color (black)
+        % Color not specified, set to default color (black)
         vect.Color = [0 0 0];
     end
 else
@@ -217,7 +215,7 @@ else
         % only keep first occurrence
         vectorColor = vectorColor{1};
         % convert to RGB triplet by drawing an invisible dummy line
-        % (because it's invisible, it will not change any axes limits!)
+        % (an invisible line will not change any axis limits!)
         h = line(ax, 0, 0, 0, 'Color', vectorColor, 'Visible', 'off');
         vect.Color = h.Color;
         delete(h);
@@ -230,7 +228,7 @@ shaftWidth = extract(style, pat);
 if isempty(shaftWidth)
     % nothing found, check optional ShaftWidth argument
     if ~isfield(vect, 'ShaftWidth')
-        % not specified, set to 1 point (default)
+        % ShaftWidth not specified, set to 1 point (default)
         vect.ShaftWidth = 1;
     end
 else
@@ -243,13 +241,13 @@ else
     end
 end
 
-% tip highlight mode: parse style for 'o' or '*'
+% tip highlight mode: parse style for '*' or 'o'
 pat = regexpPattern('(*|o)');
 TipMode = extract(style, pat);
 if isempty(TipMode)
     % nothing found, check optional TipMode argument
     if ~isfield(vect, 'TipMode')
-        % not specified, set to '' (default)
+        % TipMode not specified, set to '' (default)
         vect.TipMode = '';
     end
 else
@@ -262,41 +260,41 @@ else
     end
 end
 
-% this set of vector data will be saved as UserData
+% vector data that will be saved as UserData
 vectData = vect;
 
 %% Dimensions
 
 % diameter of sphere (in points) marking the origin O
 if isempty(vect.SphereDiameter)
-    vect.SphereDiameter = 0;         % no origin marker (sphere)
+    vect.SphereDiameter = 0;                % no origin marker (sphere)
 end
 
 % cone width in points
 if isempty(vect.ConeWidth)
-    vect.ConeWidth = 12*vect.ShaftWidth;  % default cone width
+    vect.ConeWidth = 12*vect.ShaftWidth;	% default cone width
 end
 
 % cone length in points
 if isempty(vect.ConeLength)
-    vect.ConeLength = 3*vect.ConeWidth;   % default cone length
+    vect.ConeLength = 3*vect.ConeWidth;     % default cone length
 end
 
-% fraction of cone height that forms the tip
+% fraction of cone length that forms the tip
 fTip = vect.TipFraction;
 
 % fraction of cone base radius that forms the rim
 fRim = vect.RimFraction;
 
-% determine the angle needed for highlighting the tip
+% determine the angle needed to decide whether to highlight the tip
 if isempty(vect.TipMode)
-    % never highlight the tip; set angle alpha to 0 (default)
+    % never highlight the tip; set angle to 0 (default)
     alpha = 0;
 elseif strcmp(vect.TipMode, 'o')
-    % highlight the tip when it faces the camera; set alpha to base angle (w/o tip)
+    % highlight the tip when it faces the camera; set angle to base angle (w/o tip)
     alpha = atan(vect.ConeWidth/2/((1-fTip)*vect.ConeLength));
 elseif strcmp(vect.TipMode, '*')
-    % always highlight the tip; set alpha to infinity
+    % always highlight the tip; set angle to infinity
     alpha = Inf;
 end
 
@@ -304,7 +302,7 @@ end
 
 % cone color
 if ~isfield(vect, 'ConeColor')
-    % default color is the vector color
+    % default color is the main vector color
     vect.ConeColor = vect.Color;
 end
 
@@ -314,10 +312,10 @@ if ~isfield(vect, 'RimColor')
     vect.RimColor = vect.ConeColor;
 end
 
-% lighter shade of the cone color (default color of base and tip)
+% produce lighter shade of the cone color (default color of base and tip)
 liteCol = 1 - 0.2*(1 - vect.ConeColor);
 if all(liteCol == vect.ConeColor)
-    % cone color is white, so make it light grey
+    % cone color is white, so choose light grey
     liteCol = [0.95 0.95 0.95];
 end
 
@@ -335,11 +333,11 @@ end
 
 % sphere color
 if ~isfield(vect, 'SphereColor')
-    % default color is the vector color
+    % default color is the main vector color
     vect.SphereColor = vect.Color;
 end
 
-%% Create (folded) arrow shape for vector
+%% Design blueprint vector (vector cone with shaft tucked inside)
 
 % get data aspect ratio (to draw cone without distortion)
 d = daspect;
@@ -350,93 +348,94 @@ el = ax.View(2);
 
 % get axis-to-points conversion factors for current view
 [xppt, yppt, zppt] = points2axes(ax);
-% convert to sections-per-point
+% convert to equal length units-per-point
 f = [xppt, yppt, zppt]./d;
-% reduction factors (due to rotation out of camera plane)
+% view reduction factors (due to rotation out of camera plane)
 xRed = sqrt(cosd(az)^2 + sind(az)^2*sind(el)^2);
 yRed = sqrt(sind(az)^2 + cosd(az)^2*sind(el)^2);
 zRed = abs(cosd(el));
 
-% pick the best axes for constructing arrow shape
+% select axes with the smallest conversion factors for constructing the blueprint vector
 if (max(f) == f(1))
     fh = f(2)*yRed;      	% horizontal axis is y
     fv = f(3)*zRed;     	% vertical axis is z
-    arrowDir = [0 0 1];     % arrow direction
+    vectDir = [0 0 1];      % vector direction
 elseif (max(f) == f(2))
     fh = f(1)*xRed;       	% horizontal axis is x
     fv = f(3)*zRed;        	% vertical axis is z
-    arrowDir = [0 0 1];     % arrow direction
+    vectDir = [0 0 1];      % vector direction
 else
     fh = f(1)*xRed;        	% horizontal axis is x
     fv = f(2)*yRed;       	% vertical axis is y
-    arrowDir = [0 1 0];     % arrow direction
+    vectDir = [0 1 0];      % vector direction
 end
 
-% convert dimensions in points to axis units
+% convert dimensions in points to equal length units
 shaftWidth = vect.ShaftWidth*fh;
 coneWidth = vect.ConeWidth*fh;
 sphDia = vect.SphereDiameter*fh;
 coneLength = vect.ConeLength*fv;
 
-% build upright vector with tip at origin and base center at -coneLength
+% build upright blueprint vector in generalized coordinates [h1,h2,v]
+% with tip at origin and base at v = -coneLength
 % 1: tip apex
-% 1->2: tip
-% 2->3: outer cone surface
-% 3->4: rim
-% 4->5: base
-% 5->6: shaft
-% 6->7: end of shaft
+% 1 to 2: tip
+% 2 to 3: outer cone surface
+% 3 to 4: rim
+% 4 to 5: base
+% 5 to 6: shaft
+% 6 to 7: end of shaft
 % 7: origin
-[hVector1, hVector2, ~] = cylinder([0, coneWidth/2*fTip, coneWidth/2, coneWidth/2*(1-fRim),...
+% lateral vector surface coordinates
+[h1, h2, ~] = cylinder([0, coneWidth/2*fTip, coneWidth/2, coneWidth/2*(1-fRim),...
     shaftWidth/2, shaftWidth/2, 0], vect.NumPoints);
-% section the tip and translate cone so that tip apex is at origin
-vVector = zeros(size(hVector1));
-vVector(2,:) = vVector(2,:) - fTip*coneLength;
-vVector(3:5,:) = vVector(3:5,:) - coneLength;
+% start with all vertical vector surface coordinates set to zero
+v = zeros(size(h1));
+% create tip section
+v(2,:) = v(2,:) - fTip*coneLength;
+% create base with rim
+v(3:5,:) = v(3:5,:) - coneLength;
 
-% back to x, y, z coordinates
+% match generalized coordinates to selected axes
 if (max(f) == f(1))
-    yVector = hVector1;
-    zVector = vVector;
-    xVector = hVector2;
+    yVector = h1;
+    zVector = v;
+    xVector = h2;
 elseif (max(f) == f(2))
-    xVector = hVector1;
-    zVector = vVector;
-    yVector = hVector2;
+    xVector = h1;
+    zVector = v;
+    yVector = h2;
 else
-    xVector = hVector1;
-    yVector = vVector;
-    zVector = hVector2;
+    xVector = h1;
+    yVector = v;
+    zVector = h2;
 end
 
 % color data for vector surface
 cVector = ones([size(xVector), 3]);
-% set tip (index 1) to cone color; will change to tip color only if highlighted
-cVector(1,:,1) = vect.ConeColor(1);
-cVector(1,:,2) = vect.ConeColor(2);
-cVector(1,:,3) = vect.ConeColor(3);
-% set outer cone surface (index 2) to cone color
-cVector(2,:,1) = vect.ConeColor(1);
-cVector(2,:,2) = vect.ConeColor(2);
-cVector(2,:,3) = vect.ConeColor(3);
-% set rim (index 3) to rim color
+% set tip and outer cone surface to cone color
+% (tip will later be assigned tip color if highlighted)
+cVector(1:2,:,1) = vect.ConeColor(1);
+cVector(1:2,:,2) = vect.ConeColor(2);
+cVector(1:2,:,3) = vect.ConeColor(3);
+% set rim to rim color
 cVector(3,:,1) = vect.RimColor(1);
 cVector(3,:,2) = vect.RimColor(2);
 cVector(3,:,3) = vect.RimColor(3);
-% set base (index 4) to base color
+% set base to base color
 cVector(4,:,1) = vect.BaseColor(1);
 cVector(4,:,2) = vect.BaseColor(2);
 cVector(4,:,3) = vect.BaseColor(3);
-% set shaft (index 5 to 7) to vector color
+% set shaft to main vector color
 cVector(5:7,:,1) = vect.Color(1);
 cVector(5:7,:,2) = vect.Color(2);
 cVector(5:7,:,3) = vect.Color(3);
 
-%% Create sphere as origin marker
+%% Design sphere as origin marker
 
 % unit sphere centered at [0 0 0]
 [xSph, ySph, zSph] = sphere;
-% enlarge sphere to final diameter
+% enlarge sphere to final diameter in equal length units
 xSph = xSph * sphDia/2;
 ySph = ySph * sphDia/2;
 zSph = zSph * sphDia/2;
@@ -447,17 +446,17 @@ cSph(:,:,1) = vect.SphereColor(1);
 cSph(:,:,2) = vect.SphereColor(2);
 cSph(:,:,3) = vect.SphereColor(3);
 
-%% Plot vectors and spheres
+%% Draw vector(s) and sphere(s)
 
-% get camera position (to determine whether to highlight the tip)
+% get camera position (needed to determine whether to highlight the tip)
 cam = (camtarget-campos)./d;	% "squeezed" camera view direction vector
 camDir = cam/norm(cam);         % corresponding unit vector
 
-% create group object for vectors and spheres
+% create group object for vector(s) and sphere(s)
 hGroup = hggroup('Tag', 'vectorgroup', 'UserData', vectData,...
     'ButtonDownFcn', {@(src,evt) vectorupdate(src)});
 
-% save current axis limits
+% save current axes limits before drawing starts
 axLims = [ax.XLim ax.YLim ax.ZLim];
 
 for n = 1:size(P,1)
@@ -468,62 +467,63 @@ for n = 1:size(P,1)
     sqz = (B-A)./d;             % squeezed vector pointing from origin to tip
     sqzDir = sqz/norm(sqz);     % corresponding unit vector
     
-    % draw folded arrow (temporary)
+    % draw blueprint vector (temporary)
     hVector = surface(xVector, yVector, zVector, cVector,...
-        'FaceColor', 'flat', 'EdgeColor', 'none', 'Tag', 'vector', 'Parent', hGroup,...
-        'HitTest', 'off');
+        'FaceColor', 'flat', 'EdgeColor', 'none', 'Tag', 'vector', 'HitTest', 'off',...
+        'Parent', hGroup);
     
-    % rotate arrow so that it aligns with (squeezed) unit vector
-    rotAxis = cross(arrowDir,sqzDir);
+    % rotate blueprint vector so that it aligns with squeezed vector
+    rotAxis = cross(vectDir,sqzDir);
     if isequal(rotAxis, [0 0 0])
-        % unit vectors are parallel or antiparallel, so pick any axis
+        % unit vectors are parallel or antiparallel, so pick any axis for the rotation
         rotAxis = [1 0 0];
     end
-    rotAngle = acosd(dot(sqzDir,arrowDir));
+    rotAngle = acosd(dot(sqzDir,vectDir));
     rotate(hVector, rotAxis, rotAngle, [0 0 0]);
     
-    % expand coordinates of rotated squeezed vector according to data aspect ratio
+    % generate real coordinates of rotated blueprint vector using data aspect ratio
     x = hVector.XData*d(1);
     y = hVector.YData*d(2);
     z = hVector.ZData*d(3);
     
-    % move vector tip (with attached cone) into B
+    % move entire cone so that tip apex is in B
     x(1:5,:) = x(1:5,:) + B(1);
     y(1:5,:) = y(1:5,:) + B(2);
     z(1:5,:) = z(1:5,:) + B(3);
     
-    % move vector origin into A
+    % move entire shaft so that origin is in A
     x(6:end,:) = x(6:end,:) + A(1);
     y(6:end,:) = y(6:end,:) + A(2);
     z(6:end,:) = z(6:end,:) + A(3);
     
-    % update vector
+    % update vector coordinates with these values
     hVector.XData = x;
     hVector.YData = y;
     hVector.ZData = z;
     
     % highlight tip?
     if (acos(dot(-camDir, sqzDir)) < alpha)
+        % get current color data
         c = hVector.CData;
-        % set color of tip (index 1)
+        % assign tip color to the tip
         c(1,:,1) = vect.TipColor(1);
         c(1,:,2) = vect.TipColor(2);
         c(1,:,3) = vect.TipColor(3);
+        % update color data
         hVector.CData = c;
     end
     
     if (((n==1) || ~oneOrigin) && (sphDia>0))
-        % draw sphere as origin marker
-        surface(xSph*d(1)+A(n,1), ySph*d(2)+A(n,2), zSph*d(3)+A(n,3), cSph,...
-            'FaceColor', 'flat', 'EdgeColor', 'none', 'Tag', 'sphere', 'Parent', hGroup,...
-            'HitTest', 'off');
+        % draw sphere (in real coordinates) as origin marker
+        surface(xSph*d(1) + A(1), ySph*d(2) + A(2), zSph*d(3) + A(3), cSph,...
+            'FaceColor', 'flat', 'EdgeColor', 'none', 'Tag', 'sphere', 'HitTest', 'off',...
+            'Parent', hGroup);
     end
 end
 
 % issue warning if axis limits have changed
-[ax.XLim ax.YLim ax.ZLim];
 if ~all(axLims == [ax.XLim ax.YLim ax.ZLim])
-    % axis limits have changed
+    % axis limits have changed while drawing vector(s) and sphere(s)
     warning('vector:AxisLimitsChanged',...
         'Axis limits and vector dimensions have changed! Call ''vectorupdate'' or click on any vector to correct this issue.');
 end
