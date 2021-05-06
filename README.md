@@ -4,9 +4,10 @@
 
 _Vectors_ is a set of MATLAB tools for the creation of 3D (and 2D) scientific drawings and illustrations. It currently contains the following functions:
 
-- **vector** draws a fully customizable 3D vector
-- **vectorupdate** is a helper function that updates vector properties and restores the appearance of vectors that were inadvertently modified
-- the utility function [**points2axes**](https://www.mathworks.com/matlabcentral/fileexchange/90012-points2axes)
+- [**vector**](#vector) draws a fully customizable 3D vector
+- [**vectorupdate**](#vectorupdate) is a helper function that updates vector properties and restores the appearance of vectors that were inadvertently modified
+
+and the utility function [**points2axes**](https://www.mathworks.com/matlabcentral/fileexchange/90012-points2axes)
 
 ## Purpose
 
