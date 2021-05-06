@@ -153,9 +153,9 @@ figure; view(-30, 15); axis equal;
 vector([0 0 0], [3 3 3]);
 ```
 
-This vector is drawn based on the axis limits that are in place before **vector** is called, which are then adjusted by MATLAB in order to accommodate the new vector. Because this also affects the vector's appearance, **vector** issues a warning and suggests to call **vectorupdate** to correct this issue.
-
 ![example2a](https://github.com/JorgWoehl/Vectors/blob/main/assets/example2a.png)
+
+This vector is drawn based on the axis limits that are in place before **vector** is called, which are then adjusted by MATLAB in order to accommodate the new vector. Because this also affects the vector's appearance, **vector** issues a warning and suggests to call **vectorupdate** to correct this issue.
 
 ```matlab
 % axis limits have changed -> vectorupdate; let's also change the color to red
