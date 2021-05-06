@@ -18,7 +18,7 @@ MATLAB's visualization engine, on the other hand, is built for 3D scenes and sup
 
 ## Requirements
 
-The _Vectors_ toolkit requires MATLAB R2021a or later releases.
+The _Vectors_ toolkit is compatible with MATLAB R2021a and later releases.
 
 ## Feedback
 
@@ -36,7 +36,7 @@ Any feedback or suggestions for improvement are welcome!
  
 Vector properties are based on the following vector components: the cone (arrowhead), the shaft, and an optional sphere marking the origin. The cone itself consists of the base, the rim, the outer cone surface, and the tip.
  
-![vector](https://github.com/JorgWoehl/Vectors/blob/main/assets/vector.png)
+![vector](./assets/vector.png)
  
 `vector(O,P,style)` draws a vector or group of vectors with properties specified in short form by the character vector `style`. `style` can contain any or all of the following properties in any order: the main color, the width (diameter) of the shaft in points, where 1 point = 1/72 of an inch, and the tip highlight mode (see below for more details).
  
@@ -121,7 +121,7 @@ figure; view(-30, 15); axis equal; axis off; axis([-0.5 1 -0.5 1 -0.5 1]);
 % draw Cartesian unit vectors with a red sphere at the origin
 vector([0 0 0], [1 0 0; 0 1 0; 0 0 1], SphereDiameter=6, SphereColor=[1 0 0]);
 ```
-![example1](https://github.com/JorgWoehl/Vectors/blob/main/assets/example1.png)
+![example1](./assets/example1.png)
 
 # **vectorupdate**
 
@@ -153,7 +153,7 @@ figure; view(-30, 15); axis equal;
 vector([0 0 0], [3 3 3]);
 ```
 
-![example2a](https://github.com/JorgWoehl/Vectors/blob/main/assets/example2a.png)
+![example2a](./assets/example2a.png)
 
 This vector is drawn based on the axis limits that are in place before **vector** is called, which are then adjusted by MATLAB in order to accommodate the new vector. Because this also affects the vector's appearance, **vector** issues a warning and suggests to call **vectorupdate** to correct this issue.
 
@@ -162,4 +162,4 @@ This vector is drawn based on the axis limits that are in place before **vector*
 vectorupdate(Color=[1 0 0]);
 ```
 
-![example2b](https://github.com/JorgWoehl/Vectors/blob/main/assets/example2b.png)
+![example2b](./assets/example2b.png)
