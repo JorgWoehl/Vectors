@@ -16,7 +16,8 @@ function hGroup = vector(O, P, style, vect)
 %   Vector properties are based on the following vector components: the
 %   cone (arrowhead), the shaft, and an optional sphere marking the origin.
 %   The cone itself consists of the base, the rim, the outer cone surface,
-%   and the tip.
+%   and the tip. The cone is slightly beveled in order to improve its
+%   appearance at certain angles.
 %
 %          |<------------ Shaft ------------>|<---- Cone ---->|
 %
@@ -61,8 +62,8 @@ function hGroup = vector(O, P, style, vect)
 %      main color is the default color for all vector parts except for the
 %      base and the tip.
 %   'ConeColor'
-%      Color of the outer cone surface, specified as an RGB triplet. The
-%      default is the main color.
+%      Color of the outer cone surface including bevel, specified as an RGB
+%      triplet. The default is the main color.
 %   'RimColor'
 %      Color of the rim, specified as an RGB triplet. The default is the
 %      cone color.
@@ -96,18 +97,20 @@ function hGroup = vector(O, P, style, vect)
 %      point. Note that the default cone width and default cone length
 %      scale linearly with 'ShaftWidth'.
 %   'ConeWidth'
-%      Width (diameter) of the cone base incl. rim in points, where 1 point
-%      = 1/72 of an inch. The default is 12 times 'ShaftWidth'.
+%      Maximum width of the cone in points, where 1 point = 1/72 of an
+%      inch. The default is 12 times 'ShaftWidth'.
 %   'ConeLength'
 %      Full length of the cone in points, where 1 point = 1/72 of an inch.
-%      The default is 3 times 'ConeWidth'. Note that a cone appears in its
-%      full length only if the vector is parallel to the viewing plane.
+%      This does not include the cone bevel, which adds 0.5 points. The
+%      default is 3 times 'ConeWidth'. Note that a cone appears in its full
+%      length only if the vector is parallel to the viewing plane.
 %   'TipFraction'
 %      Ratio of the length of the tip to the full length of the cone,
 %      expressed as a fractional value between 0 and 1. The default is 0.2.
 %   'RimFraction'
-%      Ratio of the rim thickness to the radius of the cone, expressed as a
-%      fractional value between 0 and 1. The default is 0.167, which
+%      Ratio of the rim thickness to the rim radius, expressed as a
+%      fractional value between 0 and 1. The rim radius is half the cone
+%      width, minus the bevel of 0.5 points. The default is 0.18, which
 %      corresponds to a 1 point rim for the default vector.
 %   'NumPoints'
 %      Number of points around the vector circumference, specified as a
@@ -140,6 +143,7 @@ function hGroup = vector(O, P, style, vect)
 
 % Created 2021-04-26 by Jorg C. Woehl.
 % 2021-05-04 (JCW): First release version (v1.0).
+% 2021-05-13 (JCW): Added bevel to improve appearance at certain angles (v1.0.1).
 
 %% Input argument validation
 
@@ -161,7 +165,7 @@ arguments
     vect.ConeWidth double {mustBeScalarOrEmpty, mustBeFinite, mustBeNonnegative} = []
     vect.ConeLength double {mustBeScalarOrEmpty, mustBeFinite, mustBeNonnegative} = []
     vect.TipFraction (1,1) double {mustBeFinite, mustBeInRange(vect.TipFraction,0,1,'inclusive')} = 0.2
-    vect.RimFraction (1,1) double {mustBeFinite, mustBeInRange(vect.RimFraction,0,1,'inclusive')} = 0.167
+    vect.RimFraction (1,1) double {mustBeFinite, mustBeInRange(vect.RimFraction,0,1,'inclusive')} = 0.18
     vect.NumPoints (1,1) double {mustBeFinite, mustBeInteger, mustBeGreaterThan(vect.NumPoints,1)} = 50
 end
 
@@ -375,26 +379,31 @@ shaftWidth = vect.ShaftWidth*fh;
 coneWidth = vect.ConeWidth*fh;
 sphDia = vect.SphereDiameter*fh;
 coneLength = vect.ConeLength*fv;
+bevelLength = 0.5*fv;   % half point
+bevelWidth = 0.5*fh;    % half point
 
 % build upright blueprint vector in generalized coordinates [h1,h2,v]
 % with tip at origin and base at v = -coneLength
 % 1: tip apex
-% 1 to 2: tip
-% 2 to 3: outer cone surface
-% 3 to 4: rim
-% 4 to 5: base
-% 5 to 6: shaft
-% 6 to 7: end of shaft
-% 7: origin
+% 1 -> 2: tip
+% 2 -> 3: outer cone surface
+% 3 -> 4: cone bevel
+% 4 -> 5: rim
+% 5 -> 6: base
+% 6 -> 7: shaft
+% 7 -> 8: end of shaft
+
 % lateral vector surface coordinates
-[h1, h2, ~] = cylinder([0, coneWidth/2*fTip, coneWidth/2, coneWidth/2*(1-fRim),...
+[h1, h2, ~] = cylinder([0, coneWidth/2*fTip, coneWidth/2, coneWidth/2-bevelWidth, (coneWidth/2-bevelWidth)*(1-fRim),...
     shaftWidth/2, shaftWidth/2, 0], vect.NumPoints);
-% start with all vertical vector surface coordinates set to zero
+
+% vertical vector surface coordinates, initially set to zero
 v = zeros(size(h1));
 % create tip section
 v(2,:) = v(2,:) - fTip*coneLength;
-% create base with rim
-v(3:5,:) = v(3:5,:) - coneLength;
+% create base with bevel and rim
+v(3,:) = v(3,:) - coneLength;
+v(4:6,:) = v(4:6,:) - (coneLength+bevelLength);
 
 % match generalized coordinates to selected axes
 if (max(f) == f(1))
@@ -415,21 +424,21 @@ end
 cVector = ones([size(xVector), 3]);
 % set tip and outer cone surface to cone color
 % (tip will later be assigned tip color if highlighted)
-cVector(1:2,:,1) = vect.ConeColor(1);
-cVector(1:2,:,2) = vect.ConeColor(2);
-cVector(1:2,:,3) = vect.ConeColor(3);
+cVector(1:3,:,1) = vect.ConeColor(1);
+cVector(1:3,:,2) = vect.ConeColor(2);
+cVector(1:3,:,3) = vect.ConeColor(3);
 % set rim to rim color
-cVector(3,:,1) = vect.RimColor(1);
-cVector(3,:,2) = vect.RimColor(2);
-cVector(3,:,3) = vect.RimColor(3);
+cVector(4,:,1) = vect.RimColor(1);
+cVector(4,:,2) = vect.RimColor(2);
+cVector(4,:,3) = vect.RimColor(3);
 % set base to base color
-cVector(4,:,1) = vect.BaseColor(1);
-cVector(4,:,2) = vect.BaseColor(2);
-cVector(4,:,3) = vect.BaseColor(3);
+cVector(5,:,1) = vect.BaseColor(1);
+cVector(5,:,2) = vect.BaseColor(2);
+cVector(5,:,3) = vect.BaseColor(3);
 % set shaft to main vector color
-cVector(5:7,:,1) = vect.Color(1);
-cVector(5:7,:,2) = vect.Color(2);
-cVector(5:7,:,3) = vect.Color(3);
+cVector(6:end,:,1) = vect.Color(1);
+cVector(6:end,:,2) = vect.Color(2);
+cVector(6:end,:,3) = vect.Color(3);
 
 %% Design sphere as origin marker
 
@@ -487,14 +496,14 @@ for n = 1:size(P,1)
     z = hVector.ZData*d(3);
     
     % move entire cone so that tip apex is in B
-    x(1:5,:) = x(1:5,:) + B(1);
-    y(1:5,:) = y(1:5,:) + B(2);
-    z(1:5,:) = z(1:5,:) + B(3);
+    x(1:6,:) = x(1:6,:) + B(1);
+    y(1:6,:) = y(1:6,:) + B(2);
+    z(1:6,:) = z(1:6,:) + B(3);
     
     % move entire shaft so that origin is in A
-    x(6:end,:) = x(6:end,:) + A(1);
-    y(6:end,:) = y(6:end,:) + A(2);
-    z(6:end,:) = z(6:end,:) + A(3);
+    x(7:end,:) = x(7:end,:) + A(1);
+    y(7:end,:) = y(7:end,:) + A(2);
+    z(7:end,:) = z(7:end,:) + A(3);
     
     % update vector coordinates with these values
     hVector.XData = x;
@@ -525,5 +534,5 @@ end
 if ~all(axLims == [ax.XLim ax.YLim ax.ZLim])
     % axis limits have changed while drawing vector(s) and sphere(s)
     warning('vector:AxisLimitsChanged',...
-        'Axis limits and vector dimensions have changed! Call ''vectorupdate'' or click on any vector to correct this issue.');
+        'Axis limits and vector dimensions have changed!\nCall ''vectorupdate'' or click on any vector to correct this problem.');
 end

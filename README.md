@@ -4,14 +4,14 @@
 
 _Vectors_ is a set of MATLAB tools for the creation of 3D (and 2D) scientific drawings and illustrations. It currently contains the following functions:
 
-- [**vector**](#vector) draws a fully customizable 3D vector
-- [**vectorupdate**](#vectorupdate) is a helper function that updates vector properties and restores the appearance of vectors that were inadvertently modified
+- [**vector**](#vector), which draws a fully customizable 3D vector,
+- [**vectorupdate**](#vectorupdate), a helper function that updates vector properties and restores the appearance of vectors that were inadvertently modified,
 
-and the utility function [**points2axes**](https://www.mathworks.com/matlabcentral/fileexchange/90012-points2axes)
+and the utility function [**points2axes**](https://www.mathworks.com/matlabcentral/fileexchange/90012-points2axes).
 
 ## Purpose
 
-Producing high-quality illustrations and drawings in 3D for math-related disciplines is a surprisingly difficult endeavour due to the lack of dedicated illustration software. 
+Producing high-quality illustrations and drawings in 3D for math-related disciplines is a surprisingly difficult endeavor due to the lack of dedicated illustration software. 
 
 _PowerPoint_ has some built-in drawing capabilities that are easy to use but limited in scope, while more capable vector-based drawing programs such as _Adobe Illustrator_ or _Inkscape_ have steep learning curves. Most importantly, all of these tools are designed for drawing on two-dimensional canvases and do not inherently support 3D scenes or 3D rendering and shading. CAD software is better suited for this purpose, but is notoriously difficult to learn and too cumbersome for purely illustrative purposes. Research scientists and science instructors alike often have to juggle between these and other programs to obtain the desired results.
 
@@ -23,7 +23,7 @@ The _Vectors_ toolkit is compatible with MATLAB R2021a and later releases.
 
 ## Feedback
 
-Any feedback or suggestions for improvement are welcome!
+Any feedback or suggestions are welcome!
 
 # **vector**
 
@@ -35,7 +35,7 @@ Any feedback or suggestions for improvement are welcome!
  
 `H = vector(O,P,...)` returns the handle `H` of a Group object containing the vector(s) from O to P.
  
-Vector properties are based on the following vector components: the cone (arrowhead), the shaft, and an optional sphere marking the origin. The cone itself consists of the base, the rim, the outer cone surface, and the tip.
+Vector properties are based on the following vector components: the cone (arrowhead), the shaft, and an optional sphere marking the origin. The cone itself consists of the base, the rim, the outer cone surface, and the tip. The cone is slightly beveled in order to improve its appearance at certain angles.
  
 ![vector](./assets/vector.png)
  
@@ -68,7 +68,7 @@ If a property is specified more than once (as in `style = 'rg'`), then only the 
 : Main color of the vector(s), specified as an RGB triplet; this overrides any color specified in `style`. The default is black. The main color is the default color for all vector parts except for the base and the tip.
 
 * `'ConeColor'`
-: Color of the outer cone surface, specified as an RGB triplet. The default is the main color.
+: Color of the outer cone surface including bevel, specified as an RGB triplet. The default is the main color.
 
 * `'RimColor'`
 : Color of the rim, specified as an RGB triplet. The default is the cone color.
@@ -92,17 +92,16 @@ If a property is specified more than once (as in `style = 'rg'`), then only the 
 : Width (diameter) of the shaft in points, where 1 point = 1/72 of an inch; this overrides any width specified in `style`. The default is 1 point. Note that the default cone width and default cone length scale linearly with `'ShaftWidth'`.
 
 * `'ConeWidth'`
-: Width (diameter) of the cone base incl. rim in points, where 1 point = 1/72 of an inch. The default is 12 times `'ShaftWidth'`.
+: Maximum width of the cone in points, where 1 point = 1/72 of an inch. The default is 12 times `'ShaftWidth'`.
 
 * `'ConeLength'`
-: Full length of the cone in points, where 1 point = 1/72 of an inch. The default is 3 times `'ConeWidth'`. Note that a cone appears in its full length only if the vector is parallel to the viewing plane.
+: Full length of the cone in points, where 1 point = 1/72 of an inch. This does not include the cone bevel, which adds 0.5 points. The default is 3 times `'ConeWidth'`. Note that a cone appears in its full length only if the vector is parallel to the viewing plane.
 
 * `'TipFraction'`
-:Ratio of the length of the tip to the full length of the cone, expressed as a fractional value between 0 and 1. The default is 0.2.
+: Ratio of the length of the tip to the full length of the cone, expressed as a fractional value between 0 and 1. The default is 0.2.
 
 * `'RimFraction'`
-: Ratio of the rim thickness to the radius of the cone, expressed as a fractional value between 0 and 1. The default is 0.167, which
-corresponds to a 1 point rim for the default vector.
+: Ratio of the rim thickness to the rim radius, expressed as a fractional value between 0 and 1. The rim radius is half the cone width, minus the bevel of 0.5 points. The default is 0.18, which corresponds to a 1 point rim for the default vector.
 
 * `'NumPoints'`
 : Number of points around the vector circumference, specified as a positive whole number. The minimum is 2; the default is 50.
@@ -115,7 +114,7 @@ Resizing the figure or axes will also change the vector dimensions. Call `vector
  
 Furthermore, **vector** needs access to the data aspect ratio, which is only reported by MATLAB if the (default) “stretch-to-fill” behavior is disabled. If necessary, **vector** will therefore change the data aspect ratio mode to `'manual'` and issue a warning. If the data aspect ratio is changed after a vector is drawn, call `vectorupdate` to restore the vector to its intended appearance.
  
-## Examples
+## Example
  
 ```matlab
 figure; view(-30, 15); axis equal; axis off; axis([-0.5 1 -0.5 1 -0.5 1]);
@@ -146,7 +145,7 @@ vector([0 0 0], [1 0 0; 0 1 0; 0 0 1], SphereDiameter=6, SphereColor=[1 0 0]);
 
 The figure and axes containing the restored or updated vectors will become the current figure and current axes, respectively, when `vectorupdate` is executed.
 
-## Examples
+## Example
  
 ```matlab
 % draw a 3D vector but let MATLAB automatically choose axis limits
@@ -156,7 +155,7 @@ vector([0 0 0], [3 3 3]);
 
 ![example2a](./assets/example2a.png)
 
-This vector is drawn based on the axis limits that are in place before **vector** is called, which are then adjusted by MATLAB in order to accommodate the new vector. Because this also affects the vector's appearance, **vector** issues a warning and suggests to call **vectorupdate** to correct this issue.
+The vector is drawn based on the axis limits that are in effect before **vector** is called. MATLAB automatically adjusts the limits in order to accommodate the new vector, which in turn affects the vector's appearance. Call **vectorupdate** to correct this problem, as recommended by the warning issued by **vector**.
 
 ```matlab
 % axis limits have changed -> vectorupdate; let's also change the color to red
